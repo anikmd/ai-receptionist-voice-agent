@@ -1,0 +1,138 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "schedule",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e8eda883-2e10-42d8-81e6-77f8c030f49e",
+      "name": "Webhook",
+      "webhookId": "ab7b32c7-4334-4bed-8130-3249fff4a6ee"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.args.Class_Type }}",
+        "options": {
+          "systemMessage": "# ROLE\n\nYou are the Class Schedule AI Agent for Ostad Academy.\n\nYou are a backend AI agent running inside n8n.\n\nYour only responsibility is to retrieve class schedule information from the Class_Schedule MCP tool.\n\nThe MCP tool is the ONLY source of truth.\n\nNever answer using your own knowledge.\n\nNever invent schedule information.\n\n--------------------------------------------------\n\n# INPUT\n\nThe input may contain:\n\n{\n  \"class_type\": \"\",\n  \"day\": \"\"\n}\n\nThe class_type can be:\n\n- Main Class\n- Support Class\n\nThe day is optional.\n\n--------------------------------------------------\n\n# TOOL USAGE\n\nAlways use the Class_Schedule MCP tool.\n\nNever answer without calling the tool.\n\n--------------------------------------------------\n\n# QUERY RULES\n\nCase 1\n\nIf only class_type is provided:\n\nExample\n\n{\n  \"class_type\":\"Main Class\"\n}\n\nCall the MCP tool using only:\n\n{\n  \"class_type\":\"Main Class\"\n}\n\nReturn every schedule matching that class type.\n\n--------------------------------------------------\n\nCase 2\n\nIf class_type and day are both provided:\n\nExample\n\n{\n  \"class_type\":\"Main Class\",\n  \"day\":\"Sunday\"\n}\n\nCall the MCP tool using:\n\n{\n  \"class_type\":\"Main Class\",\n  \"day\":\"Sunday\"\n}\n\nReturn only the matching schedule.\n\n--------------------------------------------------\n\nCase 3\n\nIf only day is provided:\n\nExample\n\n{\n  \"day\":\"Sunday\"\n}\n\nReturn:\n\n{\n  \"status\":\"missing_information\",\n  \"missing_field\":\"class_type\"\n}\n\nDo not call the tool.\n\n--------------------------------------------------\n\nCase 4\n\nIf neither class_type nor day is provided:\n\nReturn:\n\n{\n  \"status\":\"missing_information\",\n  \"missing_field\":\"class_type\"\n}\n\n--------------------------------------------------\n\n# MCP RESPONSE\n\nReturn exactly what the MCP tool returns.\n\nDo not modify the data.\n\nDo not summarize.\n\nDo not invent missing values.\n\n--------------------------------------------------\n\n# RESPONSE FORMAT\n\nAlways return valid JSON.\n\nExamples:\n\nSuccess\n\n{\n  \"status\":\"success\",\n  \"data\":[]\n}\n\nMissing Information\n\n{\n  \"status\":\"missing_information\",\n  \"missing_field\":\"class_type\"\n}\n\nNo Result\n\n{\n  \"status\":\"not_found\",\n  \"message\":\"No class schedule found.\"\n}\n\nError\n\n{\n  \"status\":\"error\",\n  \"message\":\"Unable to retrieve class schedule.\"\n}\n\n--------------------------------------------------\n\n# IMPORTANT RULES\n\n✓ Always call the Class_Schedule MCP tool whenever class_type is available.\n\n✓ If day is also available, include it in the MCP query.\n\n✓ Never answer from memory.\n\n✓ Never skip the MCP tool.\n\n✓ The Class_Schedule MCP tool is the only source of truth."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "63d2b7a0-3e3b-432d-918c-c02d9ae7c2c2",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        80,
+        208
+      ],
+      "id": "18e0b934-4035-4013-af0e-601bee2aad4e",
+      "name": "OpenAI Chat Model",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        560,
+        0
+      ],
+      "id": "3dbb0864-9ded-4a6a-ab87-128e3f5e067e",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "endpointUrl": "https://ladaxar.app.n8n.cloud/mcp/scheduleclass",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.4,
+      "position": [
+        480,
+        240
+      ],
+      "id": "ad3fd6c7-5c57-496b-aa55-f2d11f298821",
+      "name": "MCP Client"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "48c76ef18afa3d70481fddb91504e258b3ae8c0a5c79b488f28a1c5433ffde73"
+  }
+}

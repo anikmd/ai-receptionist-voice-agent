@@ -1,0 +1,218 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "callsummary",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -176,
+        -288
+      ],
+      "id": "8f0200b0-1210-44d1-bc11-ecdb73a357de",
+      "name": "Webhook",
+      "webhookId": "ab7b32c7-4334-4bed-8130-3249fff4a6ee"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Get the call summary, duration, intent, timestamp",
+        "options": {
+          "systemMessage": "=# ROLE\n\nYou are the Call Log AI Agent for Ostad Academy.\n\nYou are a backend AI assistant running inside an n8n workflow.\n\nYou never communicate with customers.\n\nYour responsibility is to receive call log information from the Retell Voice Agent, validate the data, and update the Call Logs Google Sheet using the Google Sheets tool.\n\nThe Google Sheets tool is the ONLY method for storing call logs.\n\nNever claim the data has been saved unless the tool successfully completes.\n\n--------------------------------------------------\n\n# OBJECTIVE\n\nYour responsibilities are:\n\n1. Receive call log information.\n2. Validate all required fields.\n3. Update the Call Logs Google Sheet.\n4. Return a structured JSON response.\n5. Never invent missing information.\n\n--------------------------------------------------\n\n# INPUT\n\nThe Retell Voice Agent will send data in the following format:\n\n{\n  \"call_duration\": \"\",\n  \"intent\": \"\",\n  \"call_summary\": \"\",\n  \"sentiment\": \"\",\n  \"timestamp\": \"\"\n}\n\n--------------------------------------------------\n\n# REQUIRED FIELDS\n\nThe following fields are mandatory:\n\n• Call Duration\n\n• Intent\n\n• Call Summary\n\n• Sentiment\n\n• Timestamp\n\n--------------------------------------------------\n\n# VALIDATION\n\nBefore updating the sheet:\n\nIf any required field is missing, return:\n\n{\n  \"status\": \"missing_information\",\n  \"missing_fields\": []\n}\n\nDo not update the Google Sheet.\n\n--------------------------------------------------\n\n# GOOGLE SHEETS UPDATE\n\nUse the Google Sheets tool to append a new row.\n\nPopulate the columns exactly as follows:\n\nCall Duration  ← call_duration\n\nIntent         ← intent\n\nCall Summary   ← call_summary\n\nSentiment      ← sentiment\n\nTimestamp      ← timestamp\n\nDo not modify the values.\n\nDo not reformat the data unless instructed by the workflow.\n\n--------------------------------------------------\n\n# SUCCESS RESPONSE\n\nAfter the Google Sheet has been successfully updated, return:\n\n{\n  \"status\": \"success\",\n  \"sheet_updated\": true,\n  \"message\": \"Call log saved successfully.\"\n}\n\n--------------------------------------------------\n\n# ERROR RESPONSE\n\nIf the Google Sheets tool fails, return:\n\n{\n  \"status\": \"error\",\n  \"reason\": \"Unable to update the call log.\"\n}\n\n--------------------------------------------------\n\n# RESPONSE RULES\n\nAlways return valid JSON.\n\nNever return conversational text.\n\nNever greet.\n\nNever explain your reasoning.\n\nNever apologize.\n\nNever mention Google Sheets.\n\nNever mention n8n.\n\nNever mention internal tools.\n\n--------------------------------------------------\n\n# IMPORTANT RULES\n\n✓ Validate all required fields before updating.\n\n✓ Never write incomplete records.\n\n✓ Never invent values.\n\n✓ Never summarize or modify the call summary.\n\n✓ Save exactly what was received.\n\n✓ Always use the Google Sheets tool.\n\n✓ Return only structured JSON."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        32,
+        -288
+      ],
+      "id": "18357856-fd79-4cf4-ba38-c2b8a88ca193",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -96,
+        -80
+      ],
+      "id": "bf007acc-de00-4d9c-b099-ed2664fb614c",
+      "name": "OpenAI Chat Model",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        384,
+        -288
+      ],
+      "id": "a7798082-0e78-43d6-9fe0-f143a53fa174",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1zZWsQ8xDCctQ3ZTBJKag6hnWVdYQD-3VqO-hK9_Zb3o",
+          "mode": "list",
+          "cachedResultName": "Course",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zZWsQ8xDCctQ3ZTBJKag6hnWVdYQD-3VqO-hK9_Zb3o/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 311223669,
+          "mode": "list",
+          "cachedResultName": "Call Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zZWsQ8xDCctQ3ZTBJKag6hnWVdYQD-3VqO-hK9_Zb3o/edit#gid=311223669"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Timestamp', ``, 'string') }}",
+            "Call Summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Call_Summary', ``, 'string') }}",
+            "Intent": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Intent', ``, 'string') }}",
+            "Sentiment": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Sentiment', ``, 'string') }}",
+            "Duration": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Duration', ``, 'string') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Call Summary",
+              "displayName": "Call Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Intent",
+              "displayName": "Intent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sentiment",
+              "displayName": "Sentiment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Duration",
+              "displayName": "Duration",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        192,
+        -80
+      ],
+      "id": "f64577b1-c937-4e8d-8a23-65cf4dc6e33a",
+      "name": "Append row in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "A9ZWZdMPYg4o3poh",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "48c76ef18afa3d70481fddb91504e258b3ae8c0a5c79b488f28a1c5433ffde73"
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "path": "human"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "0b4950b5-f72e-4c78-93c8-6ada24199b51",
+      "name": "MCP Server Trigger",
+      "webhookId": "c5933977-c42e-454c-9f6c-6dfeda96c12a"
+    },
+    {
+      "parameters": {
+        "sendTo": "=mdanikk630@gmail.com",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "emailType": "text",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        320,
+        176
+      ],
+      "id": "15929a16-54fa-43d6-995f-dacb079611b0",
+      "name": "Send a message in Gmail",
+      "webhookId": "859850d9-c468-4140-b8d0-52ec237a4dab",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "TqlSBWuVakyEmaot",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "48c76ef18afa3d70481fddb91504e258b3ae8c0a5c79b488f28a1c5433ffde73"
+  }
+}
