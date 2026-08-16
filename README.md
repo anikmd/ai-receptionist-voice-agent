@@ -503,8 +503,8 @@ This project demonstrates practical experience with:
 
 AI Automation Engineer
 
-* LinkedIn: [YOUR_LINKEDIN_URL](https://www.linkedin.com/in/md-anik-khan-7b3a2a3a1/)
-* Portfolio: [YOUR_PORTFOLIO_URL](https://throbbing-butterfly-0377.mdanikk630.workers.dev/)
+* LinkedIn: [Md. Anik](https://www.linkedin.com/in/md-anik-khan-7b3a2a3a1/)
+* Portfolio: [Portfolio](https://throbbing-butterfly-0377.mdanikk630.workers.dev/)
 * Email: [mdanikk630@gmail.com](mailto:mdanikk630@gmail.com)
 
 ---
